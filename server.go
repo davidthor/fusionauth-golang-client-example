@@ -49,7 +49,7 @@ func setupRouter() *gin.Engine {
 
 func indexRoute(c *gin.Context) {
 	userSesh := getUser(c)
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{"Name": userSesh.user.FirstName, "ClientID": ClientID})
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{"Name": userSesh.user.FirstName, "ClientID": ClientID, "Host": FAHost, "Port": FAPort})
 }
 
 func oauthRedirectRoute(c *gin.Context) {

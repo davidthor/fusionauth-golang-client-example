@@ -12,9 +12,9 @@ interfaces:
     port: 8080
 parameters:
   FA_HOST:
-    default: ${ dependencies['gowiem/fusionauth'].interfaces.public.url }
+    default: ${ dependencies['gowiem/fusionauth'].interfaces.public.external.host }
   FA_PORT:
-    default: ${ dependencies['gowiem/fusionauth'].interfaces.public.port }
+    default: ${ dependencies['gowiem/fusionauth'].interfaces.public.external.port }
   FA_CLIENT_ID:
     default: 8cc4c901-1852-4e62-a655-699f2c94ffdc
   FA_CLIENT_SECRET:
