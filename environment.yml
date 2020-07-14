@@ -1,0 +1,13 @@
+components:
+  gowiem/fusionauth:
+    extends: file:./fusionauth
+    parameters:
+      FUSIONAUTH_API_KEY: sJfDg7AU9p53kdVBryk2UarvAMcShZjdTqWAVqPBY2M
+  gowiem/fusionauth-go-client:
+    extends: file:./
+    parameters:
+      FUSIONAUTH_API_KEY: sJfDg7AU9p53kdVBryk2UarvAMcShZjdTqWAVqPBY2M
+
+interfaces:
+  auth: ${ components['gowiem/fusionauth'].interfaces.external.url }
+  app: ${ components['gowiem/fusionauth-go-client'].interfaces.app.url }

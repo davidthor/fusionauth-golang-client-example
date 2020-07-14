@@ -1,28 +1,35 @@
-name: gowiem/fa-golang-example
-description: A small Golang API for testing FusionAuth
-language: golang
-keywords:
-  - golang
-  - example
-  - architect
-  - fusionauth
-interfaces:
-  public:
-    description: Publicly accessible API
-    port: 8080
+name: gowiem/fusionauth-go-client
+description: Example Go client for FusionAuth
+
 parameters:
-  FA_HOST:
-    default: ${ dependencies['gowiem/fusionauth'].interfaces.public.external.host }
-  FA_PORT:
-    default: ${ dependencies['gowiem/fusionauth'].interfaces.public.external.port }
-  FA_CLIENT_ID:
-    default: 8cc4c901-1852-4e62-a655-699f2c94ffdc
-  FA_CLIENT_SECRET:
-    default: OshhDO0d1Y6Hrejsd697Yo4unTar_gI00fHiIASMZGc
-  FA_API_KEY:
-    default: vB_ap-t-zsCbOYv9HhETbbRm1Ue8C3FFP28qJQWfNTo
-  PUBLIC_PORT:
-    description: The port the public API should listen on
-    default: 8080
+  FUSIONAUTH_API_KEY:
+  FUSIONAUTH_APP_ID:
+    description: Unique identifier of the OAuth application to be generated
+    default: c439b3ac-14e7-4661-a3db-ec42cade2119
+  FUSIONAUTH_APP_NAME:
+    description: Name to give the application registered with FusionAuth
+    default: Architect
+  PUBLIC_PORT: 8080
+
 dependencies:
   gowiem/fusionauth: latest
+
+services:
+  app:
+    build:
+      context: ./
+    interfaces:
+      main: ${ parameters.PUBLIC_PORT }
+    environment:
+      PUBLIC_PORT: ${ parameters.PUBLIC_PORT }
+      BASE_URL: ${ interfaces.app.url }
+      FA_HOST: ${ dependencies['gowiem/fusionauth'].interfaces.external.host }
+      FA_PORT: ${ dependencies['gowiem/fusionauth'].interfaces.external.port }
+      FA_API_KEY: ${ parameters.FUSIONAUTH_API_KEY }
+      FA_APP_ID: ${ parameters.FUSIONAUTH_APP_ID }
+      FA_APP_NAME: ${ parameters.FUSIONAUTH_APP_NAME }
+
+interfaces:
+  app:
+    description: Exposes the app to upstream traffic
+    url: ${ services.app.interfaces.main.url }

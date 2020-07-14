@@ -1,0 +1,63 @@
+name: gowiem/fusionauth
+description: An example fusion auth Architect component
+
+parameters:
+  DB_NAME: fusionauth
+  ROOT_DB_USER: fusionauth
+  ROOT_DB_PASS: secret
+  FUSIONAUTH_DB_USER: ${ parameters.ROOT_DB_USER }
+  FUSIONAUTH_DB_PASS: ${ parameters.ROOT_DB_PASS }
+  FUSIONAUTH_MEMORY: 512M
+  FUSIONAUTH_RUNTIME_MODE: development
+  FUSIONAUTH_API_KEY:
+    description: API key to initialize FusionAuth with. Will be used by upstreams to generate applications.
+    required: true
+  ADMIN_USER_EMAIL:
+    description: Email address of the default admin user
+    default: test@test.com
+  ADMIN_USER_PASSWORD:
+    description: Password for the default admin user
+    default: password
+
+interfaces:
+  external:
+    description: Exposes the fusionauth app to upstream traffic
+    url: ${ services.fusionauth.interfaces.public.url }
+
+services:
+  fusionauth-db:
+    image: postgres:9.6
+    interfaces:
+      postgres:
+        protocol: postgresql
+        port: 5432
+    environment:
+      POSTGRES_USER: ${ parameters.ROOT_DB_USER }
+      POSTGRES_PASSWORD: ${ parameters.ROOT_DB_PASS }
+      POSTGRES_DB: ${ parameters.DB_NAME }
+    volumes:
+      pgdata:
+        mount_path: /var/lib/postgresql/data
+
+  fusionauth:
+    build:
+      context: .
+    interfaces:
+      public: 9011
+    environment:
+      DATABASE_URL: jdbc:${ services.fusionauth-db.interfaces.postgres.url }/${ parameters.DB_NAME }
+      DATABASE_ROOT_USER: ${ parameters.ROOT_DB_USER }
+      DATABASE_ROOT_PASSWORD: ${ parameters.ROOT_DB_PASS }
+      DATABASE_USER: ${ parameters.FUSIONAUTH_DB_USER }
+      DATABASE_PASSWORD: ${ parameters.FUSIONAUTH_DB_PASS }
+      FUSIONAUTH_MEMORY: ${ parameters.FUSIONAUTH_MEMORY }
+      FUSIONAUTH_SEARCH_ENGINE_TYPE: database
+      FUSIONAUTH_URL: ${ interfaces.external.url }
+      FUSIONAUTH_RUNTIME_MODE: ${ parameters.FUSIONAUTH_RUNTIME_MODE }
+      FUSIONAUTH_API_KEY: ${ parameters.FUSIONAUTH_API_KEY }
+      ADMIN_USER_EMAIL: ${ parameters.ADMIN_USER_EMAIL }
+      ADMIN_USER_PASSWORD: ${ parameters.ADMIN_USER_PASSWORD }
+      FUSIONAUTH_KICKSTART: /usr/local/fusionauth/kickstart.json
+    volumes:
+      config:
+        mount_path: /usr/local/fusionauth/config

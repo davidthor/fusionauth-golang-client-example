@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/FusionAuth/go-client/pkg/fusionauth"
 	"github.com/gin-contrib/sessions"
@@ -14,11 +13,7 @@ import (
 )
 
 var (
-	httpClient = &http.Client{
-		Timeout: time.Second * 10,
-	}
 	userStore = make(map[string]userSession)
-	faClient  *fusionauth.FusionAuthClient
 )
 
 type userSession struct {
@@ -49,7 +44,7 @@ func setupRouter() *gin.Engine {
 
 func indexRoute(c *gin.Context) {
 	userSesh := getUser(c)
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{"Name": userSesh.user.FirstName, "ClientID": ClientID, "Host": FAHost, "Port": FAPort})
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{"Name": userSesh.user.FirstName, "BaseUrl": BaseUrl, "ClientID": ClientID, "Host": FAHost, "Port": FAPort})
 }
 
 func oauthRedirectRoute(c *gin.Context) {
@@ -57,7 +52,7 @@ func oauthRedirectRoute(c *gin.Context) {
 		c.Query("code"),
 		ClientID,
 		ClientSecret,
-		"http://localhost:8080/oauth/redirect",
+		"http://"+FAHost+"/oauth/redirect",
 	)
 	if err != nil {
 		log.Fatal(err)

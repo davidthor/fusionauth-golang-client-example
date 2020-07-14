@@ -8,7 +8,7 @@
 
     {{ if (eq .Name "") }}
 
-        <a href="http://{{.Host}}:{{.Port}}/oauth2/authorize?client_id={{.ClientID}}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080/oauth/redirect&scope=offline_access" >
+        <a href="http://{{.Host}}:{{.Port}}/oauth2/authorize?client_id={{.ClientID}}&response_type=code&redirect_uri={{.BaseUrl}}/oauth/redirect&scope=openid">
             Login
         </a>
     {{ else }}
